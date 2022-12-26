@@ -3,11 +3,14 @@ package sk.figlar.a7minutesworkout
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import sk.figlar.a7minutesworkout.databinding.ActivityExerciseBinding
+import java.util.*
 
-class ExerciseActivity : AppCompatActivity() {
+class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var binding: ActivityExerciseBinding
 
     private lateinit var restTimer: CountDownTimer
@@ -19,6 +22,8 @@ class ExerciseActivity : AppCompatActivity() {
     private val exerciseList = Constants.defaultExerciseList()
     private var currentExercisePosition = -1
 
+    private lateinit var tts: TextToSpeech
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityExerciseBinding.inflate(layoutInflater)
@@ -27,6 +32,8 @@ class ExerciseActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarExercise)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        tts = TextToSpeech(this, this)
 
         binding.toolbarExercise.setNavigationOnClickListener {
             onBackPressed()
@@ -67,6 +74,8 @@ class ExerciseActivity : AppCompatActivity() {
             exerciseTimer.cancel()
             exerciseProgress = 0
         }
+
+        speakOut(exerciseList[currentExercisePosition].name)
 
         binding.ivExerciseImage.setImageResource(exerciseList[currentExercisePosition].image)
         binding.tvExerciseName.text = exerciseList[currentExercisePosition].name
@@ -113,5 +122,20 @@ class ExerciseActivity : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = tts.setLanguage(Locale.US)
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported")
+            }
+        } else {
+            Log.e("TTS", "Initialization failed!")
+        }
+    }
+
+    private fun speakOut(text: String) {
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
     }
 }
