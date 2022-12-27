@@ -122,6 +122,10 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
             override fun onFinish() {
                 currentExercisePosition++
+
+                exerciseList[currentExercisePosition].isSelected = true
+                adapter.notifyDataSetChanged()
+
                 setupExerciseView()
             }
         }.start()
@@ -138,6 +142,10 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             }
 
             override fun onFinish() {
+                exerciseList[currentExercisePosition].isSelected = false
+                exerciseList[currentExercisePosition].isCompleted = true
+                adapter.notifyDataSetChanged()
+
                 if (currentExercisePosition < exerciseList.size - 1) {
                     setupRestView()
                 } else {
