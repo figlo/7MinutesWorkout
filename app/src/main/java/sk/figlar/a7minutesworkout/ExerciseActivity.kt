@@ -1,5 +1,7 @@
 package sk.figlar.a7minutesworkout
 
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -23,6 +25,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var currentExercisePosition = -1
 
     private lateinit var tts: TextToSpeech
+    private lateinit var player: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +46,18 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun setupRestView() {
+        try {
+            val soundURI = Uri.parse(
+                "android.resource://sk.figlar.a7minutesworkout/" +
+                        R.raw.press_start
+            )
+            player = MediaPlayer.create(applicationContext, soundURI)
+            player.isLooping = false
+            player.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         binding.flRestProgressBar.visibility = View.VISIBLE
         binding.tvTitle.visibility = View.VISIBLE
         binding.tvExerciseName.visibility = View.INVISIBLE
