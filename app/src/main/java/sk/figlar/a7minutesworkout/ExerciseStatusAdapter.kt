@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import sk.figlar.a7minutesworkout.databinding.ItemExerciseStatusBinding
 
 class ExerciseStatusAdapter(val items: List<ExerciseModel>) :
-    RecyclerView.Adapter<ExerciseStatusAdapter.ViewHolder> {
+    RecyclerView.Adapter<ExerciseStatusAdapter.ViewHolder>() {
 
     class ViewHolder(binding: ItemExerciseStatusBinding) : RecyclerView.ViewHolder(binding.root) {
         val tvItem = binding.tvItem
