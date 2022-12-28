@@ -40,7 +40,6 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbarExercise)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         tts = TextToSpeech(this, this)
