@@ -1,18 +1,18 @@
 package sk.figlar.a7minutesworkout
 
+import android.app.Dialog
 import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import sk.figlar.a7minutesworkout.databinding.ActivityExerciseBinding
+import sk.figlar.a7minutesworkout.databinding.DialogCustomBackConfirmationBinding
 import java.util.*
 
 class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -46,11 +46,32 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         tts = TextToSpeech(this, this)
 
         binding.toolbarExercise.setNavigationOnClickListener {
-            onBackPressed()
+            customDialogForBackButton()
         }
 
         setupRestView()
         setupExerciseStatusRecyclerView()
+    }
+
+    override fun onBackPressed() {
+        customDialogForBackButton()
+    }
+
+    private fun customDialogForBackButton() {
+        val customDialog = Dialog(this)
+        val dialogBinding = DialogCustomBackConfirmationBinding.inflate(layoutInflater)
+        customDialog.setContentView(dialogBinding.root)
+        customDialog.setCanceledOnTouchOutside(false)
+
+        dialogBinding.btnYes.setOnClickListener {
+            this@ExerciseActivity.finish()
+            customDialog.dismiss()
+        }
+        dialogBinding.btnNo.setOnClickListener {
+            customDialog.dismiss()
+        }
+
+        customDialog.show()
     }
 
     private fun setupExerciseStatusRecyclerView() {
@@ -119,8 +140,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         restTimer = object : CountDownTimer(restTimerDuration * 1000, 1000) {
             override fun onTick(p0: Long) {
                 restProgress++
-                binding.restProgressBar.progress = 10 - restProgress
-                binding.tvRestTimer.text = (10 - restProgress).toString()
+                binding.restProgressBar.progress = restTimerDuration.toInt() - restProgress
+                binding.tvRestTimer.text = (restTimerDuration.toInt() - restProgress).toString()
             }
 
             override fun onFinish() {
@@ -140,8 +161,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         exerciseTimer = object : CountDownTimer(exerciseTimerDuration * 1000, 1000) {
             override fun onTick(p0: Long) {
                 exerciseProgress++
-                binding.exerciseProgressBar.progress = 30 - exerciseProgress
-                binding.tvExerciseTimer.text = (30 - exerciseProgress).toString()
+                binding.exerciseProgressBar.progress = exerciseTimerDuration.toInt() - exerciseProgress
+                binding.tvExerciseTimer.text = (exerciseTimerDuration.toInt() - exerciseProgress).toString()
             }
 
             override fun onFinish() {
@@ -173,5 +194,17 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private fun speakOut(text: String) {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+    override fun onDestroy() {
+        restTimer.cancel()
+        restProgress = 0
+
+        tts.stop()
+        tts.shutdown()
+
+        player.stop()
+
+        super.onDestroy()
     }
 }
