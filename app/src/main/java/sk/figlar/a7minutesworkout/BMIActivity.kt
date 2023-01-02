@@ -44,14 +44,7 @@ class BMIActivity : AppCompatActivity() {
         }
 
         binding.btnCalculate.setOnClickListener {
-            if (validateUnits()) {
-                val weight = binding.etWeight.text.toString().toFloat()
-                val height = binding.etHeight.text.toString().toFloat() / 100
-                val bmi = weight / (height * height)
-                displayBMIResult(bmi)
-            } else {
-                Toast.makeText(this, "Please enter valid values.", Toast.LENGTH_SHORT).show()
-            }
+            calculateUnits()
         }
     }
 
@@ -89,11 +82,11 @@ class BMIActivity : AppCompatActivity() {
         val bmiDescription: String
 
         when {
-            bmi < 15f -> {
+            bmi < 15f   -> {
                 bmiLabel = "Very severely underweight"
                 bmiDescription = "Oops! You really need to take better care of yourself! Eat more!"
             }
-            bmi < 16f -> {
+            bmi < 16f   -> {
                 bmiLabel = "Severely underweight"
                 bmiDescription = "Oops! You really need to take better care of yourself! Eat more!"
             }
@@ -101,23 +94,23 @@ class BMIActivity : AppCompatActivity() {
                 bmiLabel = "Underweight"
                 bmiDescription = "Oops! You really need to take better care of yourself! Eat more!"
             }
-            bmi < 25f -> {
+            bmi < 25f   -> {
                 bmiLabel = "Normal"
                 bmiDescription = "Congratulations! You are in a good shape!"
             }
-            bmi < 30f -> {
+            bmi < 30f   -> {
                 bmiLabel = "Overweight"
                 bmiDescription = "Oops! You really need to take better care of yourself! Workout more!"
             }
-            bmi < 35f -> {
+            bmi < 35f   -> {
                 bmiLabel = "Obese class | Moderately obese"
                 bmiDescription = "Oops! You really need to take better care of yourself! Workout more!"
             }
-            bmi < 40f -> {
+            bmi < 40f   -> {
                 bmiLabel = "Obese class | Severely obese"
                 bmiDescription = "OMG! You are in a very dangerous condition! Act now!"
             }
-            else -> {
+            else        -> {
                 bmiLabel = "Obese class | Very severely obese"
                 bmiDescription = "OMG! You are in a very dangerous condition! Act now!"
             }
@@ -138,6 +131,48 @@ class BMIActivity : AppCompatActivity() {
         if (binding.etWeight.text.toString().isEmpty()) {
             isValid = false
         } else if (binding.etHeight.text.toString().isEmpty()) {
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun calculateUnits() {
+        if (currentVisibleView == METRIC_UNITS_VIEW) {
+            if (validateUnits()) {
+                val weight = binding.etWeight.text.toString().toFloat()
+                val height = binding.etHeight.text.toString().toFloat() / 100
+
+                val bmi = weight / (height * height)
+
+                displayBMIResult(bmi)
+            } else {
+                Toast.makeText(this, "Please enter valid values.", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            if (validateUSUnits()) {
+                val weightUS = binding.etWeightUS.text.toString().toFloat()
+                val heightUSFeet = binding.etHeightUSFeet.text.toString().toFloat()
+                val heightUSInch = binding.etHeightUSInch.text.toString().toFloat()
+
+                val heightUSInchValue = heightUSInch + heightUSFeet * 12
+                val bmi = 703 * weightUS / (heightUSInchValue * heightUSInchValue)
+
+                displayBMIResult(bmi)
+            } else {
+                Toast.makeText(this, "Please enter valid values.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun validateUSUnits(): Boolean {
+        var isValid = true
+
+        if (binding.etWeightUS.text.toString().isEmpty()) {
+            isValid = false
+        } else if (binding.etHeightUSFeet.text.toString().isEmpty()) {
+            isValid = false
+        } else if (binding.etHeightUSInch.text.toString().isEmpty()) {
             isValid = false
         }
 
