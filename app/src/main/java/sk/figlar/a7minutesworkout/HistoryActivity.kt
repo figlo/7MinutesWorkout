@@ -2,6 +2,9 @@ package sk.figlar.a7minutesworkout
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import sk.figlar.a7minutesworkout.databinding.ActivityHistoryBinding
 
 class HistoryActivity : AppCompatActivity() {
@@ -19,6 +22,17 @@ class HistoryActivity : AppCompatActivity() {
 
         binding.tbHistory.setNavigationOnClickListener {
             onBackPressed()
+        }
+
+        val dao = (application as WorkOutApp).db.historyDao()
+        getAllCompleteDates(dao)
+    }
+
+    private fun getAllCompleteDates(dao: HistoryDao) {
+        lifecycleScope.launch {
+            dao.fetchAllDates().collect() { allCompletedDatesList ->
+
+            }
         }
     }
 }
